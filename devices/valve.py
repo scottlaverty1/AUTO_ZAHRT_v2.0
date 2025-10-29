@@ -6,12 +6,6 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-"""
-Valve device interface for AutoZahrt.
-
-The role of this class is to control valves and all objects in this class
-"""
-
 from ..devices import Device
 import abc
 
