@@ -1,4 +1,13 @@
-"""Liquid handler device interface for AutoZahrt.
+# ------------------------------------------------------------------------------
+# Software: AUTO_ZAHRT
+# Copyright: (C) 2025 by Professor Andrew Zahrt
+# This software is the intellectual property of Professor Andrew Zahrt
+# Contributions by graduate students Scott Laverty are acknowledged.
+# All rights reserved.
+# ------------------------------------------------------------------------------
+
+"""
+Liquid handler device interface for AutoZahrt.
 
 Concrete liquid handler drivers should live in `devices/liquid_handler_devices/`.
 This module defines the async interface expected of all liquid handler drivers.
@@ -6,8 +15,6 @@ This module defines the async interface expected of all liquid handler drivers.
 
 from .devices import Device
 import abc
-from typing import Mapping, Any
-
 
 class LiquidHandler(Device, abc.ABC):
     """Abstract high-level interface for liquid handler robots.
@@ -20,23 +27,18 @@ class LiquidHandler(Device, abc.ABC):
     """
 
     @abc.abstractmethod
-    async def move_xy(self, x: float, y: float) -> None:
+    def move_xy(self, x: float, y: float) -> None:
         """Move the toolhead to X/Y coordinates (mm)."""
 
     @abc.abstractmethod
-    async def move_z(self, z: float) -> None:
+    def get_xy(self) -> tuple[float, float]:
+        """Return (X, Y) current coordinates in mm."""
+
+    @abc.abstractmethod
+    def move_z(self, z: float) -> None:
         """Move the toolhead to Z coordinate (mm)."""
 
     @abc.abstractmethod
-    async def get_z(self) -> float:
+    def get_z(self) -> float:
         """Return the current Z position (mm)."""
-
-    @abc.abstractmethod
-    async def set_bedlayout(self, bed_layout: Mapping[str, Any]) -> None:
-        """Configure bed/plate layout.
-
-        `bed_layout` is an implementation-defined mapping describing the
-        locations and types of plates/racks. Concrete drivers should document
-        the expected shape for their hardware.
-        """
 
