@@ -35,6 +35,6 @@ class Pump(Device, abc.ABC):
     async def stop_flow(self) -> None:
         """Stop any ongoing aspiration/dispense operation promptly."""
 
-    async def shutdown(self) -> None:
+    async def close(self) -> None:
         """Convenience: shutdown the pump (default: call `disconnect()`)."""
         await self.disconnect()

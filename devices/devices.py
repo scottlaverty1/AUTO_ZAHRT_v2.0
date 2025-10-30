@@ -10,7 +10,7 @@ Parent classes and a small DeviceRegistry for concrete device instances.
 
 Design notes (synchronous API):
 - Device is an abstract base class (ABC) with sync lifecycle hooks:
-  connect(), disconnect(), stop().
+  connect(), close(), stop().
 - Specific device interfaces live in sibling modules (e.g. `devices/pumps.py`,
   `devices/liquid_handlers.py`). Concrete drivers live under `devices/*_devices/`
   and implement these interfaces.

@@ -1,10 +1,16 @@
-"""Temperature controller device interface for AutoZahrt."""
+# ------------------------------------------------------------------------------
+# Software: AUTO_ZAHRT
+# Copyright: (C) 2025 by Professor Andrew Zahrt
+# This software is the intellectual property of Professor Andrew Zahrt
+# Contributions by graduate students Scott Laverty are acknowledged.
+# All rights reserved.
+# ------------------------------------------------------------------------------
 
 from .devices import Device
 import abc
 
 
-class TemperatureController(Device, abc.ABC):
+class TemperatureController(Device):
     """Abstract interface for temperature controllers.
 
     Implementations should allow setting temperature setpoints and reading
@@ -12,9 +18,9 @@ class TemperatureController(Device, abc.ABC):
     """
 
     @abc.abstractmethod
-    async def set_temperature(self, temp_c: float) -> None:
+    def set_temperature(self, temp_c: float) -> None:
         """Set a temperature setpoint in Celsius."""
 
     @abc.abstractmethod
-    async def read_temperature(self) -> float:
+    def read_temperature(self) -> float:
         """Return current temperature in Celsius."""

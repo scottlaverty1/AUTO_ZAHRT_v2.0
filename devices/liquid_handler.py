@@ -6,25 +6,17 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-"""
-Liquid handler device interface for AutoZahrt.
-
-Concrete liquid handler drivers should live in `devices/liquid_handler_devices/`.
-This module defines the async interface expected of all liquid handler drivers.
-"""
-
-from .devices import Device
+# liquid_handler.py
+from __future__ import annotations
 import abc
+from .devices import Device
 
-class LiquidHandler(Device, abc.ABC):
-    """Abstract high-level interface for liquid handler robots.
+class LiquidHandler(Device):
+    """Abstract high-level interface for liquid handler robots (synchronous)."""
 
-    Notes:
-    - Coordinates are assumed to be in millimeters (mm).
-    - Volumes are assumed to be in microliters (µL) unless otherwise stated.
-    - Implementations must implement the Device lifecycle methods and set
-      `self._connected = True` on successful `connect()`.
-    """
+    @abc.abstractmethod
+    def home(self) -> None:
+        """Home the liquid handler (move axes to known reference)."""
 
     @abc.abstractmethod
     def move_xy(self, x: float, y: float) -> None:
@@ -32,7 +24,7 @@ class LiquidHandler(Device, abc.ABC):
 
     @abc.abstractmethod
     def get_xy(self) -> tuple[float, float]:
-        """Return (X, Y) current coordinates in mm."""
+        """Return the current X/Y position (mm)."""
 
     @abc.abstractmethod
     def move_z(self, z: float) -> None:
@@ -41,4 +33,3 @@ class LiquidHandler(Device, abc.ABC):
     @abc.abstractmethod
     def get_z(self) -> float:
         """Return the current Z position (mm)."""
-

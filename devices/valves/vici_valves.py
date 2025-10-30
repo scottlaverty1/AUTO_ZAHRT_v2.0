@@ -10,9 +10,10 @@ from __future__ import annotations
 
 import re
 import serial
+import time
 from typing import Optional, Union
 
-from ..valves import Valve  # your Valve ABC (inherits Device)
+from ..valve import Valve  # your Valve ABC (inherits Device)
 
 
 class ViciValve(Valve):
@@ -82,9 +83,9 @@ class ViciValve(Valve):
             bytesize=serial.EIGHTBITS,
             timeout=self._timeout,
         )
+        self._connected = True
         # program stator size on connect (mirrors your original init behavior)
         self.set_number_of_positions(self.positions)
-        self._connected = True
 
     def stop(self) -> None:
         """No-op; override if your controller supports a pause/stop command."""
@@ -111,13 +112,20 @@ class ViciValve(Valve):
     def check_current_position(self) -> int:
         resp = self._send("CP")
         # try to parse the first integer in the response
+        if not resp:
+            raise RuntimeError("No response from valve - check power and connections")
         m = re.search(r"(\d+)", resp)
         if not m:
             raise RuntimeError(f"Unexpected CP response: {resp!r}")
         return int(m.group(1))
 
     def check_firmware_version(self) -> str:
-        return self._send("VR")
+        resp = self._send("VR")
+        if not resp:
+            raise RuntimeError("No response from valve - check power and connections")
+        # Clean up the response if needed
+        resp = resp.strip()
+        return resp
 
     # -------------------------
     # Extra convenience methods
@@ -213,3 +221,29 @@ class Multi_VICIValveController:
     def close(self):
         return self._broadcast('close')
 '''
+
+# ============================== USAGE EXAMPLE ==============================
+if __name__ == "__main__":
+    valve = ViciValve(
+        name="VICI Test Valve",
+        port="COM1",
+        valve_type="6-way",
+        baudrate=9600,
+        timeout=1.0,
+    )
+    valve.connect()
+    time.sleep(0.5)  # wait a moment for the valve to be ready
+    print("Firmware Version:", valve.check_firmware_version())
+    valve.move_home()
+    time.sleep(5)
+    print("Current Position after homing:", valve.check_current_position())
+    valve.go_to_position(5)
+    time.sleep(5)
+    print("Current Position after moving to 5:", valve.check_current_position())
+    valve.move_clockwise(2)
+    time.sleep(5)
+    print("Current Position after moving clockwise 2:", valve.check_current_position())
+    valve.move_counterclockwise()
+    time.sleep(5)
+    print("Current Position after moving counterclockwise 1:", valve.check_current_position())
+    valve.close()

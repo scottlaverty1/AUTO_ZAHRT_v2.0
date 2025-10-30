@@ -8,6 +8,7 @@
 
 import serial
 import time
+from typing import Optional, Dict, Union
 
 from ..temperature_controller import TemperatureController
 
@@ -68,9 +69,23 @@ class TC720(TemperatureController):
     def set_temperature(self, temp_celsius):
         """
         Sets the temperature on the TC-720 temperature controller.
+        
+        Args:
+            temp_celsius (float): Temperature to set in Celsius (valid range: 0°C to 150°C)
+            
+        Raises:
+            ValueError: If temperature is outside valid range
+            RuntimeError: If device is not connected
         """
+        # Validate temperature range
+        if not (0 <= temp_celsius <= 100):
+            raise ValueError(f"Temperature must be between 0°C and 100°C, got {temp_celsius}°C")
+            
         bstc = self.convert_temp_to_bstc(temp_celsius)
         print(f"Setting temperature to {temp_celsius} °C with command: {''.join(bstc)}")
+
+        if not self.ser or not self.ser.is_open:
+            raise RuntimeError("Device is not connected")
 
         for char in bstc:
             self.ser.write(char.encode())
@@ -102,3 +117,25 @@ class TC720(TemperatureController):
         if val >= 0x8000:  # handle negatives (two's complement, 16-bit)
             val -= 0x10000
         return val / 100.0  # °C
+    
+    # ---- Status monitoring ---------------------------------------------------
+    def status(self) -> dict:
+        try:
+            t = self.read_temperature(1)
+            return {"ok": True, "code": "ok", "msg": f"T={t:.2f}C"}
+        except Exception as e:
+            return {"ok": False, "code": "no_response", "msg": str(e)}
+
+
+# ============================== USAGE EXAMPLE ==============================
+if __name__ == "__main__":
+    controller = TC720(name="TC-720 Temperature Controller", port='COM19', baudrate=230400, timeout=1)
+    controller.connect()
+    try:
+        controller.set_temperature(37.5)
+        current_temp = controller.read_temperature(sensor=1)   
+        print(f"Current Temperature (Sensor 1): {current_temp:.2f} °C")
+        status = controller.status()
+        print(f"Status: {status}")
+    finally:
+        controller.stop()

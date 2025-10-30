@@ -6,7 +6,7 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-from ..devices import Device
+from devices import Device
 import abc
 
 

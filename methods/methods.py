@@ -23,10 +23,10 @@ from ..devices.liquid_handler_devices.ender3_liquid_handlers import Ender3Liquid
 from ..devices.liquid_handler_devices.gx_liquid_handlers import GX281
 from ..devices.liquid_handler_devices.bed_layout import bed_layout
 from ..devices.valves.vici_valves import ViciValve
-from ..devices.temperature_controllers.tc720 import TC720
+from ..devices.temperature_controller_devices.TC720 import TC720
 from ..devices.pump_devices.phd_ultra_pumps import PhdUltraPump
 from ..devices.pump_devices.vici_m6_pumps import VICI_M6_Pumps
-from ..devices.uv_detectors.ocean_optics import Ocean_Optics_UV_vis
+from ..devices.uv_detectors.ocean_optics import OceanOpticsUVDetector
 
 class GeneralExperimentMethod:
     def __init__(self, input_file, instrument_config_file, output_dir="Methods//Outputs",
